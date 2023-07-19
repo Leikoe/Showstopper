@@ -1,7 +1,4 @@
-use std::fs;
-use std::ops::Div;
-use std::os::windows::fs::MetadataExt;
-use std::path::Path;
+use std::{path::Path, fs::metadata};
 
 
 const MIN_FILE_SIZE_MB: u64 = 500;
@@ -28,7 +25,8 @@ fn handle_dir(path: &Path) -> std::io::Result<()> {
 }
 
 fn handle_file(path: &Path) {
-    let file_size = path.metadata().unwrap().file_size() / 1e6 as u64;
+    let file_metadata = path.metadata().unwrap();
+    let file_size = file_metadata.len() / 1e6 as u64;
     if file_size < MIN_FILE_SIZE_MB {
         return;
     }
