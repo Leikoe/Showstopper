@@ -16,8 +16,6 @@ fn handle_path<P: AsRef<Path>>(path: P) {
 }
 
 fn handle_dir(path: &Path) -> std::io::Result<()> {
-    let mut handles = vec![];
-    
     // get subdirs
     for entry in path.read_dir()? {
         if let Ok(entry) = entry {
