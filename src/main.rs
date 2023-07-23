@@ -1,7 +1,24 @@
-use std::{path::Path, fs::metadata};
+use std::path::Path;
+use clap::Parser;
 
+#[macro_use]
+extern crate lazy_static;
 
-const MIN_FILE_SIZE_MB: u64 = 500;
+lazy_static! {
+    static ref CLI: Cli = Cli::parse();
+}
+
+#[derive(Parser)]
+#[command(author, version, about, long_about = None)]
+struct Cli {
+    /// minimum displayed file size (MB)
+    #[arg(long, value_name = "SIZE", default_value = "2")]
+    minsize: u64,
+    
+    /// maximum displayed file size (MB)
+    #[arg(long, value_name = "SIZE")]
+    maxsize: Option<u64>,
+}
 
 fn handle_path<P: AsRef<Path>>(path: P) {
     let p = path.as_ref();
@@ -27,7 +44,7 @@ fn handle_dir(path: &Path) -> std::io::Result<()> {
 fn handle_file(path: &Path) {
     let file_metadata = path.metadata().unwrap();
     let file_size = file_metadata.len() / 1e6 as u64;
-    if file_size < MIN_FILE_SIZE_MB {
+    if file_size < CLI.minsize {
         return;
     }
     
@@ -37,9 +54,7 @@ fn handle_file(path: &Path) {
 }
 
 fn main() -> std::io::Result<()> {
-    // get fs root
-    let path = Path::new("/");
-    handle_path(path);
+    handle_path(Path::new("/"));
     
     Ok(())
 }
